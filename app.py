@@ -79,8 +79,8 @@ def home():
                 pre, .box {{ background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 5px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); overflow-x: auto; }}
                 table {{ border-collapse: collapse; width: 100%; margin-top: 10px; background: #fff; }}
                 th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
-                th {{ background-color: #0056b3; color: white; }}
-                .table-container {{ max-height: 400px; overflow-y: auto; }}
+                th {{ background-color: #0056b3; color: white; position: sticky; top: 0; }}
+                .table-container {{ max-height: 450px; overflow-y: auto; border: 1px solid #ccc; border-radius: 4px; box-shadow: inset 0 0 5px rgba(0,0,0,0.05); }}
             </style>
         </head>
         <body>
@@ -93,12 +93,14 @@ def home():
             <p><strong>Dimensiones (.shape) del DataFrame Final:</strong> {df_ventas.shape}</p>
 
             <h2>MÓDULO 2: MANIPULACIÓN Y FILTRADO AVANZADO (Logística de Flotas)</h2>
-            <h3>DataFrame Original de Vehículos (50 Registros):</h3>
+            <h3>DataFrame Original de Vehículos ({len(df_autos)} Registros Completos):</h3>
             <div class="table-container">
-                {df_autos.to_html(classes='dataframe', index=True)}
+                {df_autos.to_html(classes='dataframe', index=True, max_rows=100)}
             </div>
+
             <h3>Resultados Módulo 2 (Vehículos Filtrados):</h3>
             {df_filtrado.to_html(classes='dataframe', index=True)}
+            <p><strong>Total de registros después del filtro:</strong> {len(df_filtrado)} vehículos</p>
 
             <h2>MÓDULO 3: MACHINE LEARNING - OPTIMIZACIÓN SVC (Botánica - Iris)</h2>
             <div class="box">
