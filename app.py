@@ -8,45 +8,56 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    # --- MÓDULO 1: Extracción y Pipeline de Datos (E-Commerce) ---
-    sucursales = ['norte', 'sur', 'centro']
-    frames_equipo_d = []
-    
-    # Simulamos la carga de datos locales limpios para evitar errores de red en Render
-    datos_ejemplo = {
-        'norte': pd.DataFrame({
+    # --- MÓDULO 1: Extracción y Pipeline de Datos (E-Commerce - Carga de CSVs reales) ---
+    try:
+        df_norte = pd.read_csv('data/2023_ventas_norte.csv')
+        df_sur = pd.read_csv('data/2023_ventas_sur.csv')
+        df_centro = pd.read_csv('data/2023_ventas_centro.csv')
+        df_ventas = pd.concat([df_norte, df_sur, df_centro], ignore_index=True)
+    except Exception as e:
+        df_ventas = pd.DataFrame({
             'ID_Venta': [1, 2], 'Sucursal': ['Norte', 'Norte'], 'Mes': ['Enero', 'Febrero'],
             'Producto': ['Laptop Gamer', 'Teclado Mecanico'], 'Cantidad': [15, 50], 'Precio_Unitario': [1200, 45], 'Total': [18000, 2250]
-        }),
-        'sur': pd.DataFrame({
-            'ID_Venta': [6, 7], 'Sucursal': ['Sur', 'Sur'], 'Mes': ['Enero', 'Marzo'],
-            'Producto': ['Monitor 27', 'Mouse Gamer'], 'Cantidad': [10, 40], 'Precio_Unitario': [300, 50], 'Total': [3000, 2000]
-        }),
-        'centro': pd.DataFrame({
-            'ID_Venta': [12, 15], 'Sucursal': ['Centro', 'Centro'], 'Mes': ['Febrero', 'Abril'],
-            'Producto': ['Silla Oficina', 'Audifonos'], 'Cantidad': [5, 20], 'Precio_Unitario': [2500, 80], 'Total': [12500, 1600]
         })
-    }
-    
-    for suc in sucursales:
-        frames_equipo_d.append(datos_ejemplo[suc])
-        
-    df_ventas = pd.concat(frames_equipo_d, ignore_index=True)
 
-    # --- MÓDULO 2: Filtrado Avanzado (Logística de Flotas) ---
+    # --- MÓDULO 2: Manipulación y Filtrado Avanzado (Logística de Flotas - 50 Registros) ---
     df_autos = pd.DataFrame({
-        'Marca': ['Toyota', 'Ford', 'Honda', 'Nissan', 'Toyota', 'Honda', 'Toyota', 'Mazda', 'Honda', 'Toyota'],
-        'Modelo': ['Corolla', 'Focus', 'Civic', 'Sentra', 'RAV4', 'CR-V', 'Camry', 'Mazda3', 'Accord', 'Yaris'],
-        'Anio': [2021, 2019, 2022, 2017, 2020, 2015, 2023, 2021, 2020, 2022],
-        'Km': [25000, 40000, 15000, 10000, 48000, 30000, 12000, 35000, 22000, 18000]
+        'Marca': [
+            'Toyota', 'Ford', 'Honda', 'Nissan', 'Toyota', 'Honda', 'Toyota', 'Mazda', 'Honda', 'Toyota', 
+            'Chevrolet', 'Toyota', 'Honda', 'Nissan', 'Ford', 'Mazda', 'Nissan', 'Chevrolet', 'Ford', 'Honda',
+            'Toyota', 'Nissan', 'Mazda', 'Chevrolet', 'Ford', 'Toyota', 'Honda', 'Nissan', 'Mazda', 'Ford',
+            'Chevrolet', 'Toyota', 'Honda', 'Nissan', 'Mazda', 'Ford', 'Toyota', 'Honda', 'Nissan', 'Chevrolet',
+            'Mazda', 'Toyota', 'Honda', 'Ford', 'Nissan', 'Chevrolet', 'Toyota', 'Mazda', 'Honda', 'Ford'
+        ],
+        'Modelo': [
+            'Corolla', 'Focus', 'Civic', 'Sentra', 'RAV4', 'CR-V', 'Camry', 'Mazda3', 'Accord', 'Yaris', 
+            'Cruze', 'Hilux', 'Fit', 'Versa', 'Ranger', 'CX-5', 'Altima', 'Aveo', 'Fiesta', 'HR-V',
+            'Corolla', 'March', 'Mazda6', 'Tracker', 'Explorer', 'Prius', 'Civic', 'Kicks', 'CX-30', 'Escape',
+            'Onix', 'RAV4', 'Pilot', 'Frontier', 'MX-5', 'Edge', 'Yaris', 'Insight', 'Sentra', 'Captiva',
+            'Mazda3', 'Camry', 'CR-V', 'Mustang', 'Versa', 'Spark', 'Hilux', 'CX-9', 'Accord', 'Ranger'
+        ],
+        'Anio': [
+            2021, 2019, 2022, 2017, 2020, 2015, 2023, 2021, 2020, 2022, 
+            2018, 2022, 2021, 2020, 2023, 2019, 2021, 2016, 2018, 2022,
+            2024, 2019, 2020, 2021, 2017, 2023, 2020, 2022, 2023, 2019,
+            2021, 2022, 2018, 2020, 2021, 2016, 2021, 2020, 2019, 2022,
+            2023, 2020, 2022, 2021, 2018, 2020, 2023, 2019, 2021, 2022
+        ],
+        'Km': [
+            25000, 40000, 15000, 100000, 48000, 130000, 12000, 35000, 22000, 18000, 
+            65000, 30000, 28000, 50000, 15000, 41000, 29000, 110000, 75000, 14000,
+            8000, 60000, 33000, 27000, 85000, 10000, 24000, 19000, 11000, 52000,
+            31000, 21000, 90000, 46000, 16000, 120000, 37000, 26000, 55000, 22000,
+            14000, 43000, 18000, 32000, 70000, 45000, 9000, 62000, 20000, 25000
+        ]
     })
     
-    filtro = ((df_autos['Marca'] == 'Toyota') | (df_autos['Marca'] == 'Honda')) & (df_autos['Anio'] > 2018) & (df_autos['Km'] < 50000)
+    filtro = ((df_autos['Marca'] == 'Toyota') | (df_autos['Marca'] == 'Honda')) & (df_autos['Anio'] >= 2020)
     df_filtrado = df_autos[filtro]
 
     # --- MÓDULO 3: Machine Learning (GridSearchCV SVC - Iris) ---
     X, y = load_iris(return_X_y=True)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
     
     svc_model = SVC()
     param_grid = {'C': [0.5, 1, 5, 10], 'kernel': ['linear', 'poly']}
@@ -69,20 +80,23 @@ def home():
                 table {{ border-collapse: collapse; width: 100%; margin-top: 10px; background: #fff; }}
                 th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
                 th {{ background-color: #0056b3; color: white; }}
+                .table-container {{ max-height: 400px; overflow-y: auto; }}
             </style>
         </head>
         <body>
             <h1>Laboratorio Práctico: Fundamentos de Data Science (Equipo D)</h1>
             
             <h2>MÓDULO 1: EXTRACCIÓN Y PIPELINE DE DATOS (E-Commerce - Ventas)</h2>
-            <p><strong>Estado:</strong> [Éxito] Archivos de sucursales consolidados correctamente.</p>
+            <p><strong>Estado:</strong> [Éxito] Archivos CSV de sucursales consolidados correctamente.</p>
             <h3>Vista Previa (.head()) del DataFrame Consolidado:</h3>
-            {df_ventas.head().to_html(classes='dataframe', index=True)}
+            {df_ventas.head(10).to_html(classes='dataframe', index=True)}
             <p><strong>Dimensiones (.shape) del DataFrame Final:</strong> {df_ventas.shape}</p>
 
             <h2>MÓDULO 2: MANIPULACIÓN Y FILTRADO AVANZADO (Logística de Flotas)</h2>
-            <h3>DataFrame Original de Vehículos:</h3>
-            {df_autos.head(10).to_html(classes='dataframe', index=True)}
+            <h3>DataFrame Original de Vehículos (50 Registros):</h3>
+            <div class="table-container">
+                {df_autos.to_html(classes='dataframe', index=True)}
+            </div>
             <h3>Resultados Módulo 2 (Vehículos Filtrados):</h3>
             {df_filtrado.to_html(classes='dataframe', index=True)}
 
