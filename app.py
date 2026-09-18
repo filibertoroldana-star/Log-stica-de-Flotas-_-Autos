@@ -20,38 +20,38 @@ def home():
         sucursales = ['Norte', 'Sur', 'Centro']
         meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio']
         
-        # Diccionario de productos con imágenes ilustrativas
         productos_info = {
-            'Laptop': 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=100',
-            'Smartphone': 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=100',
-            'Tablet': 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=100',
-            'Teclado': 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=100',
-            'Audifonos': 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100',
-            'Monitor': 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=100',
-            'Smartwatch': 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100',
-            'Impresora': 'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=100',
+            'Laptop Gamer': 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=100',
+            'Smartphone Alta Gama': 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=100',
+            'Tablet 10 pulgadas': 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=100',
+            'Teclado Mecanico': 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=100',
+            'Audifonos Bluetooth': 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100',
+            'Monitor 24 pulgadas': 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=100',
+            'Smartwatch Pro': 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100',
+            'Impresora Multifuncional': 'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=100',
             'Router': 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=100',
-            'Mouse': 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=100'
+            'Mouse Inalambrico': 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=100'
         }
         
         data_ventas = []
         prod_keys = list(productos_info.keys())
         for i in range(1, 51):
             prod = random.choice(prod_keys)
+            cant = random.randint(5, 100)
+            precio = random.randint(30, 1200)
             data_ventas.append({
                 'ID_Venta': 1000 + i,
                 'Sucursal': random.choice(sucursales),
                 'Mes': random.choice(meses),
-                'Imagen': f"<img src='{productos_info[prod]}' width='45' style='border-radius:4px;'>",
+                'Imagen': f"<img src='{productos_info[prod]}' width='40' style='border-radius:4px;'>",
                 'Producto': prod,
-                'Cantidad': random.randint(5, 100),
-                'Precio_Unitario': random.randint(30, 1200),
-                'Total': 0 # Se calculará o asignará
+                'Cantidad': cant,
+                'Precio_Unitario': precio,
+                'Total': cant * precio
             })
         df_ventas = pd.DataFrame(data_ventas)
-        df_ventas['Total'] = df_ventas['Cantidad'] * df_ventas['Precio_Unitario']
 
-    # --- MÓDULO 2: Manipulación y Filtrado Avanzado (Logística de Flotas - 50 Registros con Imágenes) ---
+    # --- MÓDULO 2: Manipulación y Filtrado Avanzado (Logística de Flotas - 50 Registros) ---
     df_autos = pd.DataFrame({
         'Imagen': [
             "https://images.unsplash.com/photo-1623869675781-8633140e646f?w=100", "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=100", 
@@ -90,7 +90,6 @@ def home():
         ]
     })
     
-    # Filtro lógico estricto solicitado en el laboratorio para el backend
     filtro = ((df_autos['Marca'] == 'Toyota') | (df_autos['Marca'] == 'Honda')) & (df_autos['Anio'] > 2018) & (df_autos['Km'] < 50000)
     df_filtrado = df_autos[filtro]
 
@@ -107,7 +106,6 @@ def home():
     test_accuracy = grid_search.score(X_test, y_test)
     best_params = grid_search.best_params_
 
-    # --- RENDERIZADO HTML CON BUSCADOR INTERACTIVO Y ESTILOS ---
     html_output = f"""
     <html>
         <head>
@@ -115,7 +113,7 @@ def home():
             <style>
                 body {{ font-family: Arial, sans-serif; margin: 30px; background-color: #f4f7f6; color: #333; }}
                 h2 {{ color: #0056b3; border-bottom: 2px solid #0056b3; padding-bottom: 5px; margin-top: 40px; }}
-                pre, .box {{ background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 5px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); }}
+                .box {{ background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 5px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); }}
                 table {{ border-collapse: collapse; width: 100%; margin-top: 10px; background: #fff; }}
                 th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: middle; }}
                 th {{ background-color: #0056b3; color: white; position: sticky; top: 0; }}
@@ -126,11 +124,10 @@ def home():
                 .btn:hover {{ background-color: #003d82; }}
             </style>
             <script>
-                // Filtrar tabla de E-Commerce por Sucursal
                 function filtrarSucursal(sucursal) {{
                     var filas = document.querySelectorAll("#tabla-ventas tbody tr");
                     filas.forEach(function(fila) {{
-                        var celda = fila.cells[2].innerText.trim(); // Columna Sucursal
+                        var celda = fila.cells[2].innerText.trim();
                         if (sucursal === 'Todas' || celda === sucursal) {{
                             fila.style.display = "";
                         }} else {{
@@ -139,7 +136,6 @@ def home():
                     }});
                 }}
 
-                // Buscador interactivo dinámico para la flota de vehículos
                 function buscarAutos() {{
                     var marcaFiltro = document.getElementById("filtro-marca").value.toLowerCase();
                     var kmMax = parseInt(document.getElementById("filtro-km").value) || Infinity;
@@ -167,7 +163,6 @@ def home():
         <body>
             <h1>Laboratorio Práctico: Fundamentos de Data Science (Equipo D)</h1>
             
-            <!-- MÓDULO 1 -->
             <h2>MÓDULO 1: EXTRACCIÓN Y PIPELINE DE DATOS (E-Commerce - 50 Registros)</h2>
             <p><strong>Estado:</strong> [Éxito] Consolidación de 50 registros con imágenes ilustrativas para las sucursales Norte, Sur y Centro.</p>
             
@@ -184,9 +179,7 @@ def home():
             </div>
             <p style="margin-top: 8px;"><strong>Dimensiones (.shape):</strong> {df_ventas.shape}</p>
 
-            <!-- MÓDULO 2 -->
             <h2>MÓDULO 2: MANIPULACIÓN Y FILTRADO AVANZADO (Logística de Flotas)</h2>
-            <p>Utiliza el buscador dinámico por kilometraje, marca o año, o revisa los vehículos filtrados automáticamente por la rúbrica.</p>
             
             <div class="controls-container">
                 <div>
@@ -206,15 +199,13 @@ def home():
 
             <h3>Todos los Vehículos ({len(df_autos)} Registros con Imágenes):</h3>
             <div class="table-container">
-                <table id="tabla-autos" class="dataframe">
-                    {df_autos.to_html(index=True, escape=False, header=True).split('<thead>')[1]}
+                {df_autos.to_html(classes='dataframe', id="tabla-autos", index=True, escape=False)}
             </div>
 
-            <h3>Resultado del Filtro Estricto (Toyota/Honda, >2018, <50k Km):</h3>
+            <h3>Resultado del Filtro Estricto (Toyota/Honda, >2018, &lt;50k Km):</h3>
             {df_filtrado.to_html(classes='dataframe', index=True, escape=False)}
             <p><strong>Total de registros coincidentes:</strong> {len(df_filtrado)} vehículos</p>
 
-            <!-- MÓDULO 3 -->
             <h2>MÓDULO 3: MACHINE LEARNING - OPTIMIZACIÓN SVC (Iris Dataset)</h2>
             <div class="box">
                 <p><strong>Mejores Parámetros (.best_params_):</strong> {best_params}</p>
