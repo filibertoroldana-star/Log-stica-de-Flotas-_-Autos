@@ -8,6 +8,9 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
+    # Permitir que Pandas muestre todas las filas de los DataFrames en HTML sin truncar
+    pd.set_option('display.max_rows', None)
+
     # --- MÓDULO 1: Extracción y Pipeline de Datos (E-Commerce - Carga de CSVs reales) ---
     try:
         df_norte = pd.read_csv('data/2023_ventas_norte.csv')
@@ -80,6 +83,7 @@ def home():
                 table {{ border-collapse: collapse; width: 100%; margin-top: 10px; background: #fff; }}
                 th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
                 th {{ background-color: #0056b3; color: white; position: sticky; top: 0; }}
+                /* Contenedor con scroll vertical limpio para recorrer los 50 vehículos */
                 .table-container {{ max-height: 450px; overflow-y: auto; border: 1px solid #ccc; border-radius: 4px; box-shadow: inset 0 0 5px rgba(0,0,0,0.05); }}
             </style>
         </head>
@@ -95,7 +99,7 @@ def home():
             <h2>MÓDULO 2: MANIPULACIÓN Y FILTRADO AVANZADO (Logística de Flotas)</h2>
             <h3>DataFrame Original de Vehículos ({len(df_autos)} Registros Completos):</h3>
             <div class="table-container">
-                {df_autos.to_html(classes='dataframe', index=True, max_rows=100)}
+                {df_autos.to_html(classes='dataframe', index=True)}
             </div>
 
             <h3>Resultados Módulo 2 (Vehículos Filtrados):</h3>
