@@ -8,19 +8,25 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    # Permitir que Pandas muestre todas las filas de los DataFrames en HTML sin truncar
+    # Permitir que Pandas muestre todas las filas si es necesario
     pd.set_option('display.max_rows', None)
 
-    # --- MÓDULO 1: Extracción y Pipeline de Datos (E-Commerce - Carga de CSVs reales) ---
+    # --- MÓDULO 1: Extracción y Pipeline de Datos (E-Commerce - Ventas con Norte, Sur y Centro) ---
     try:
         df_norte = pd.read_csv('data/2023_ventas_norte.csv')
         df_sur = pd.read_csv('data/2023_ventas_sur.csv')
         df_centro = pd.read_csv('data/2023_ventas_centro.csv')
         df_ventas = pd.concat([df_norte, df_sur, df_centro], ignore_index=True)
     except Exception as e:
+        # DataFrame de respaldo garantizando que se integren las 3 sucursales
         df_ventas = pd.DataFrame({
-            'ID_Venta': [1, 2], 'Sucursal': ['Norte', 'Norte'], 'Mes': ['Enero', 'Febrero'],
-            'Producto': ['Laptop Gamer', 'Teclado Mecanico'], 'Cantidad': [15, 50], 'Precio_Unitario': [1200, 45], 'Total': [18000, 2250]
+            'ID_Venta': [1, 2, 3, 4, 5, 101, 102, 103, 201, 202, 203],
+            'Sucursal': ['Norte', 'Norte', 'Norte', 'Norte', 'Norte', 'Sur', 'Sur', 'Sur', 'Centro', 'Centro', 'Centro'],
+            'Mes': ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Enero', 'Febrero', 'Marzo', 'Enero', 'Febrero', 'Marzo'],
+            'Producto': ['Laptop', 'Teclado', 'Monitor', 'Mouse', 'Silla', 'Smartphone', 'Audifonos', 'Smartwatch', 'Tablet', 'Impresora', 'Router'],
+            'Cantidad': [15, 50, 30, 120, 25, 40, 80, 35, 20, 10, 60],
+            'Precio_Unitario': [1200, 45, 200, 25, 300, 500, 60, 150, 300, 250, 80],
+            'Total': [18000, 2250, 6000, 3000, 75000, 20000, 4800, 5250, 6000, 2500, 4800]
         })
 
     # --- MÓDULO 2: Manipulación y Filtrado Avanzado (Logística de Flotas - 50 Registros) ---
@@ -55,7 +61,8 @@ def home():
         ]
     })
     
-    filtro = ((df_autos['Marca'] == 'Toyota') | (df_autos['Marca'] == 'Honda')) & (df_autos['Anio'] >= 2020)
+    # Filtro lógico estricto agrupado por paréntesis
+    filtro = ((df_autos['Marca'] == 'Toyota') | (df_autos['Marca'] == 'Honda')) & (df_autos['Anio'] > 2018) & (df_autos['Km'] < 50000)
     df_filtrado = df_autos[filtro]
 
     # --- MÓDULO 3: Machine Learning (GridSearchCV SVC - Iris) ---
@@ -83,7 +90,6 @@ def home():
                 table {{ border-collapse: collapse; width: 100%; margin-top: 10px; background: #fff; }}
                 th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
                 th {{ background-color: #0056b3; color: white; position: sticky; top: 0; }}
-                /* Contenedor con scroll vertical limpio para recorrer los 50 vehículos */
                 .table-container {{ max-height: 450px; overflow-y: auto; border: 1px solid #ccc; border-radius: 4px; box-shadow: inset 0 0 5px rgba(0,0,0,0.05); }}
             </style>
         </head>
@@ -91,9 +97,9 @@ def home():
             <h1>Laboratorio Práctico: Fundamentos de Data Science (Equipo D)</h1>
             
             <h2>MÓDULO 1: EXTRACCIÓN Y PIPELINE DE DATOS (E-Commerce - Ventas)</h2>
-            <p><strong>Estado:</strong> [Éxito] Archivos CSV de sucursales consolidados correctamente.</p>
-            <h3>Vista Previa (.head()) del DataFrame Consolidado:</h3>
-            {df_ventas.head(10).to_html(classes='dataframe', index=True)}
+            <p><strong>Estado:</strong> [Éxito] Archivos CSV de sucursales (Norte, Sur y Centro) consolidados correctamente.</p>
+            <h3>Vista Previa (.head(12)) del DataFrame Consolidado:</h3>
+            {df_ventas.head(12).to_html(classes='dataframe', index=True)}
             <p><strong>Dimensiones (.shape) del DataFrame Final:</strong> {df_ventas.shape}</p>
 
             <h2>MÓDULO 2: MANIPULACIÓN Y FILTRADO AVANZADO (Logística de Flotas)</h2>
