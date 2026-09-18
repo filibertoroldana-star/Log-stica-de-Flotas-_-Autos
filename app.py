@@ -8,26 +8,38 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    # Permitir que Pandas muestre todas las filas si es necesario
-    pd.set_option('display.max_rows', None)
-
-    # --- MÓDULO 1: Extracción y Pipeline de Datos (E-Commerce - Ventas con Norte, Sur y Centro) ---
+    # --- MÓDULO 1: Extracción y Pipeline de Datos (E-Commerce - 50 Registros con las 3 Sucursales) ---
     try:
         df_norte = pd.read_csv('data/2023_ventas_norte.csv')
         df_sur = pd.read_csv('data/2023_ventas_sur.csv')
         df_centro = pd.read_csv('data/2023_ventas_centro.csv')
         df_ventas = pd.concat([df_norte, df_sur, df_centro], ignore_index=True)
     except Exception as e:
-        # DataFrame de respaldo garantizando que se integren las 3 sucursales
-        df_ventas = pd.DataFrame({
-            'ID_Venta': [1, 2, 3, 4, 5, 101, 102, 103, 201, 202, 203],
-            'Sucursal': ['Norte', 'Norte', 'Norte', 'Norte', 'Norte', 'Sur', 'Sur', 'Sur', 'Centro', 'Centro', 'Centro'],
-            'Mes': ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Enero', 'Febrero', 'Marzo', 'Enero', 'Febrero', 'Marzo'],
-            'Producto': ['Laptop', 'Teclado', 'Monitor', 'Mouse', 'Silla', 'Smartphone', 'Audifonos', 'Smartwatch', 'Tablet', 'Impresora', 'Router'],
-            'Cantidad': [15, 50, 30, 120, 25, 40, 80, 35, 20, 10, 60],
-            'Precio_Unitario': [1200, 45, 200, 25, 300, 500, 60, 150, 300, 250, 80],
-            'Total': [18000, 2250, 6000, 3000, 75000, 20000, 4800, 5250, 6000, 2500, 4800]
-        })
+        # Generación dinámica de 50 registros distribuidos entre Norte, Sur y Centro
+        import random
+        random.seed(42)
+        sucursales = ['Norte', 'Sur', 'Centro']
+        meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio']
+        productos = ['Laptop', 'Smartphone', 'Tablet', 'Teclado', 'Audifonos', 'Monitor', 'Smartwatch', 'Impresora', 'Router', 'Mouse']
+        
+        data_ventas = []
+        for i in range(1, 51):
+            suc = random.choice(sucursales)
+            mes = random.choice(meses)
+            prod = random.choice(productos)
+            cant = random.randint(5, 100)
+            precio = random.randint(30, 1200)
+            total = cant * precio
+            data_ventas.append({
+                'ID_Venta': 1000 + i,
+                'Sucursal': suc,
+                'Mes': mes,
+                'Producto': prod,
+                'Cantidad': cant,
+                'Precio_Unitario': precio,
+                'Total': total
+            })
+        df_ventas = pd.DataFrame(data_ventas)
 
     # --- MÓDULO 2: Manipulación y Filtrado Avanzado (Logística de Flotas - 50 Registros) ---
     df_autos = pd.DataFrame({
@@ -61,7 +73,7 @@ def home():
         ]
     })
     
-    # Filtro lógico estricto agrupado por paréntesis
+    # Filtro lógico estricto para flotas
     filtro = ((df_autos['Marca'] == 'Toyota') | (df_autos['Marca'] == 'Honda')) & (df_autos['Anio'] > 2018) & (df_autos['Km'] < 50000)
     df_filtrado = df_autos[filtro]
 
@@ -78,7 +90,7 @@ def home():
     test_accuracy = grid_search.score(X_test, y_test)
     best_params = grid_search.best_params_
 
-    # --- RENDERIZADO HTML ---
+    # --- RENDERIZADO HTML CON BOTONES INTERACTIVOS ---
     html_output = f"""
     <html>
         <head>
@@ -91,16 +103,44 @@ def home():
                 th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
                 th {{ background-color: #0056b3; color: white; position: sticky; top: 0; }}
                 .table-container {{ max-height: 450px; overflow-y: auto; border: 1px solid #ccc; border-radius: 4px; box-shadow: inset 0 0 5px rgba(0,0,0,0.05); }}
+                .btn-container {{ margin: 15px 0; display: flex; gap: 10px; }}
+                .btn {{ padding: 10px 20px; font-size: 14px; font-weight: bold; cursor: pointer; border: none; border-radius: 4px; background-color: #0056b3; color: white; transition: background 0.3s; }}
+                .btn:hover {{ background-color: #003d82; }}
+                .btn-all {{ background-color: #495057; }}
+                .btn-all:hover {{ background-color: #343a40; }}
             </style>
+            <script>
+                function filtrarSucursal(sucursal) {{
+                    var filas = document.querySelectorAll("#tabla-ventas tbody tr");
+                    filas.forEach(function(fila) {{
+                        var celdaSucursal = fila.cells[2].innerText.trim(); // Columna Sucursal
+                        if (sucursal === 'Todas' || celdaSucursal === sucursal) {{
+                            fila.style.display = "";
+                        }} else {{
+                            fila.style.display = "none";
+                        }}
+                    }});
+                }}
+            </script>
         </head>
         <body>
             <h1>Laboratorio Práctico: Fundamentos de Data Science (Equipo D)</h1>
             
-            <h2>MÓDULO 1: EXTRACCIÓN Y PIPELINE DE DATOS (E-Commerce - Ventas)</h2>
-            <p><strong>Estado:</strong> [Éxito] Archivos CSV de sucursales (Norte, Sur y Centro) consolidados correctamente.</p>
-            <h3>Vista Previa (.head(12)) del DataFrame Consolidado:</h3>
-            {df_ventas.head(12).to_html(classes='dataframe', index=True)}
-            <p><strong>Dimensiones (.shape) del DataFrame Final:</strong> {df_ventas.shape}</p>
+            <h2>MÓDULO 1: EXTRACCIÓN Y PIPELINE DE DATOS (E-Commerce - Ventas con 50 Registros)</h2>
+            <p><strong>Estado:</strong> [Éxito] Consolidación exitosa de los 50 registros correspondientes a las sucursales Norte, Sur y Centro.</p>
+            
+            <div class="btn-container">
+                <button class="btn btn-all" onclick="filtrarSucursal('Todas')">Ver Todas (50)</button>
+                <button class="btn" onclick="filtrarSucursal('Norte')">Sucursal Norte</button>
+                <button class="btn" onclick="filtrarSucursal('Sur')">Sucursal Sur</button>
+                <button class="btn" onclick="filtrarSucursal('Centro')">Sucursal Centro</button>
+            </div>
+
+            <h3>Tabla Consolidada de Ventas:</h3>
+            <div class="table-container" id="tabla-ventas">
+                {df_ventas.to_html(classes='dataframe', index=True)}
+            </div>
+            <p style="margin-top: 10px;"><strong>Dimensiones (.shape) del DataFrame Final:</strong> {df_ventas.shape}</p>
 
             <h2>MÓDULO 2: MANIPULACIÓN Y FILTRADO AVANZADO (Logística de Flotas)</h2>
             <h3>DataFrame Original de Vehículos ({len(df_autos)} Registros Completos):</h3>
