@@ -147,7 +147,9 @@ def home():
             </style>
             <script>
                 function filtrarSucursal(sucursal) {{
-                    var filas = document.querySelectorAll("#tabla-ventas tbody tr");
+                    var tabla = document.querySelector(".table-ventas");
+                    if (!tabla) return;
+                    var filas = tabla.querySelectorAll("tbody tr");
                     filas.forEach(function(fila) {{
                         var celda = fila.cells[2].innerText.trim();
                         if (sucursal === 'Todas' || celda === sucursal) {{
@@ -163,7 +165,9 @@ def home():
                     var kmMax = parseInt(document.getElementById("filtro-km").value) || Infinity;
                     var anioMin = parseInt(document.getElementById("filtro-anio").value) || 0;
                     
-                    var filas = document.querySelectorAll("#tabla-autos tbody tr");
+                    var tabla = document.querySelector(".table-autos");
+                    if (!tabla) return;
+                    var filas = tabla.querySelectorAll("tbody tr");
                     filas.forEach(function(fila) {{
                         var marca = fila.cells[2].innerText.toLowerCase();
                         var anio = parseInt(fila.cells[4].innerText);
@@ -196,7 +200,7 @@ def home():
                 <button class="btn-sucursal" onclick="filtrarSucursal('Centro')">Centro</button>
             </div>
 
-            <div class="table-container" id="tabla-ventas">
+            <div class="table-container">
                 {df_ventas.to_html(classes='table-ventas', index=True, escape=False)}
             </div>
             <p style="margin-top: 8px;"><strong>Dimensiones (.shape):</strong> {df_ventas.shape}</p>
@@ -221,7 +225,7 @@ def home():
 
             <h3>Todos los Vehículos ({len(df_autos)} Registros con Imágenes - Estilo Esmeralda):</h3>
             <div class="table-container">
-                {df_autos.to_html(classes='table-autos', table_id="tabla-autos", index=True, escape=False)}
+                {df_autos.to_html(classes='table-autos', index=True, escape=False)}
             </div>
 
             <h3>Resultado del Filtro Estricto (Toyota/Honda, >2018, &lt;50k Km - Estilo Púrpura):</h3>
