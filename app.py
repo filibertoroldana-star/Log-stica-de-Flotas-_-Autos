@@ -20,31 +20,18 @@ def home():
         sucursales = ['Norte', 'Sur', 'Centro']
         meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio']
         
-        productos_info = {
-            'Laptop Gamer': 'https://picsum.photos/id/1/60/40',
-            'Smartphone Alta Gama': 'https://picsum.photos/id/160/60/40',
-            'Tablet 10 pulgadas': 'https://picsum.photos/id/2/60/40',
-            'Teclado Mecanico': 'https://picsum.photos/id/3/60/40',
-            'Audifonos Bluetooth': 'https://picsum.photos/id/4/60/40',
-            'Monitor 24 pulgadas': 'https://picsum.photos/id/5/60/40',
-            'Smartwatch Pro': 'https://picsum.photos/id/6/60/40',
-            'Impresora Multifuncional': 'https://picsum.photos/id/9/60/40',
-            'Router': 'https://picsum.photos/id/20/60/40',
-            'Mouse Inalambrico': 'https://picsum.photos/id/30/60/40'
-        }
+        svg_carrito = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='35' height='30' viewBox='0 0 24 24' fill='%231e3a8a'><path d='M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z'/></svg>"
         
         data_ventas = []
-        prod_keys = list(productos_info.keys())
         for i in range(1, 51):
-            prod = random.choice(prod_keys)
             cant = random.randint(5, 100)
             precio = random.randint(30, 1200)
             data_ventas.append({
                 'ID_Venta': 1000 + i,
                 'Sucursal': random.choice(sucursales),
                 'Mes': random.choice(meses),
-                'Imagen': f"<img src='{productos_info[prod]}' width='45' style='border-radius:4px; object-fit:cover;'>",
-                'Producto': prod,
+                'Imagen': f"<img src='{svg_carrito}' width='35'>",
+                'Producto': 'Producto Tech',
                 'Cantidad': cant,
                 'Precio_Unitario': precio,
                 'Total': cant * precio
@@ -52,17 +39,11 @@ def home():
         df_ventas = pd.DataFrame(data_ventas)
 
     # --- MÓDULO 2: Manipulación y Filtrado Avanzado (Logística de Flotas - 50 Registros) ---
-    # Usamos un conjunto de IDs de imágenes completamente estables de Picsum que cargan al instante sin fallar
-    urls_estables = [
-        "https://picsum.photos/id/111/60/40", "https://picsum.photos/id/133/60/40", 
-        "https://picsum.photos/id/145/60/40", "https://picsum.photos/id/183/60/40", 
-        "https://picsum.photos/id/219/60/40", "https://picsum.photos/id/250/60/40", 
-        "https://picsum.photos/id/28/60/40", "https://picsum.photos/id/36/60/40", 
-        "https://picsum.photos/id/54/60/40", "https://picsum.photos/id/60/60/40"
-    ] * 5
+    # SVG incrustado de un auto deportivo: Carga siempre al 100% sin depender de servidores externos
+    svg_auto = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='45' height='30' viewBox='0 0 24 24' fill='%23059669'><path d='M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.04 3H5.81l1.04-3zM19 17H5v-4.66l.12-.34h13.76l.12.34V17z'/></svg>"
 
     df_autos = pd.DataFrame({
-        'Imagen': [f"<img src='{url}' width='45' style='border-radius:4px; object-fit:cover;'>" for url in urls_estables],
+        'Imagen': [f"<img src='{svg_auto}' width='42'>" for _ in range(50)],
         'Marca': [
             'Toyota', 'Ford', 'Honda', 'Nissan', 'Toyota', 'Honda', 'Toyota', 'Mazda', 'Honda', 'Toyota', 
             'Chevrolet', 'Toyota', 'Honda', 'Nissan', 'Ford', 'Mazda', 'Nissan', 'Chevrolet', 'Ford', 'Honda',
@@ -93,7 +74,7 @@ def home():
         ]
     })
     
-    # Lógica de Filtrado y Alerta de Años
+    # Lógica de Filtrado y Validaciones
     ANIO_MINIMO_DB = 2015
     mensaje_alerta = None
     df_filtrado = df_autos.copy()
