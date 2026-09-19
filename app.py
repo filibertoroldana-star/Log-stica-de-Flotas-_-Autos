@@ -11,7 +11,29 @@ app.secret_key = 'clave_secreta_laboratorio_equipo_d_crud'
 def home():
     # --- INICIALIZAR DATOS EN SESIÓN (CRUD COMPLETO) ---
     
-    # 1. Vehículos (Logística de Flotas)
+    # MÓDULO 1: Ventas E-Commerce (Pipeline de Datos)
+    if 'ventas' not in session:
+        import random
+        random.seed(42)
+        sucursales = ['Norte', 'Sur', 'Centro']
+        meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio']
+        
+        lista_ventas = []
+        for i in range(1, 51):
+            cant = random.randint(5, 100)
+            precio = random.randint(30, 1200)
+            lista_ventas.append({
+                'ID': 1000 + i,
+                'Sucursal': random.choice(sucursales),
+                'Mes': random.choice(meses),
+                'Producto': 'Producto Tech',
+                'Cantidad': cant,
+                'Precio_Unitario': precio,
+                'Total': cant * precio
+            })
+        session['ventas'] = lista_ventas
+
+    # MÓDULO 2: Vehículos (Logística de Flotas)
     if 'autos' not in session:
         marcas_base = [
             'Toyota', 'Ford', 'Honda', 'Nissan', 'Toyota', 'Honda', 'Toyota', 'Mazda', 'Honda', 'Toyota', 
@@ -52,28 +74,6 @@ def home():
             } for idx in range(50)
         ]
 
-    # 2. Ventas (Norte, Sur y Centro)
-    if 'ventas' not in session:
-        import random
-        random.seed(42)
-        sucursales = ['Norte', 'Sur', 'Centro']
-        meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio']
-        
-        lista_ventas = []
-        for i in range(1, 51):
-            cant = random.randint(5, 100)
-            precio = random.randint(30, 1200)
-            lista_ventas.append({
-                'ID': 1000 + i,
-                'Sucursal': random.choice(sucursales),
-                'Mes': random.choice(meses),
-                'Producto': 'Producto Tech',
-                'Cantidad': cant,
-                'Precio_Unitario': precio,
-                'Total': cant * precio
-            })
-        session['ventas'] = lista_ventas
-
     # --- CONTROLADORES DE ACCIÓN ---
     mensaje_alerta = None
     mensaje_exito = None
@@ -81,50 +81,8 @@ def home():
     if request.method == 'POST':
         action = request.form.get('action')
 
-        if action == 'agregar_auto':
-            m = request.form.get('marca', '').strip().capitalize()
-            modelo = request.form.get('modelo', '').strip()
-            anio = request.form.get('anio', '')
-            km = request.form.get('km', '')
-
-            if m and modelo and anio.isdigit() and km.isdigit():
-                nuevo_id = max([a['ID'] for a in session['autos']], default=0) + 1
-                session['autos'].append({
-                    'ID': nuevo_id,
-                    'Marca': m,
-                    'Modelo': modelo,
-                    'Anio': int(anio),
-                    'Km': int(km)
-                })
-                session.modified = True
-                mensaje_exito = f"✅ Vehículo {m} {modelo} agregado correctamente."
-            else:
-                mensaje_alerta = "⚠️ Complete correctamente todos los campos del vehículo."
-
-        elif action == 'eliminar_auto':
-            auto_id = int(request.form.get('id', 0))
-            session['autos'] = [a for a in session['autos'] if a['ID'] != auto_id]
-            session.modified = True
-            mensaje_exito = "🗑️ Vehículo eliminado correctamente."
-
-        elif action == 'modificar_auto':
-            auto_id = int(request.form.get('id', 0))
-            m = request.form.get('marca', '').strip().capitalize()
-            modelo = request.form.get('modelo', '').strip()
-            anio = request.form.get('anio', '')
-            km = request.form.get('km', '')
-
-            if m and modelo and anio.isdigit() and km.isdigit():
-                for a in session['autos']:
-                    if a['ID'] == auto_id:
-                        a['Marca'] = m
-                        a['Modelo'] = modelo
-                        a['Anio'] = int(anio)
-                        a['Km'] = int(km)
-                session.modified = True
-                mensaje_exito = f"✏️ Vehículo ID {auto_id} modificado correctamente."
-
-        elif action == 'agregar_venta':
+        # Acciones Módulo 1 (Ventas)
+        if action == 'agregar_venta':
             suc = request.form.get('sucursal', '')
             mes = request.form.get('mes', '').strip()
             cant = request.form.get('cantidad', '')
@@ -174,9 +132,53 @@ def home():
                 session.modified = True
                 mensaje_exito = f"✏️ Venta ID {venta_id} modificada correctamente."
 
+        # Acciones Módulo 2 (Flota de Autos)
+        elif action == 'agregar_auto':
+            m = request.form.get('marca', '').strip().capitalize()
+            modelo = request.form.get('modelo', '').strip()
+            anio = request.form.get('anio', '')
+            km = request.form.get('km', '')
+
+            if m and modelo and anio.isdigit() and km.isdigit():
+                nuevo_id = max([a['ID'] for a in session['autos']], default=0) + 1
+                session['autos'].append({
+                    'ID': nuevo_id,
+                    'Marca': m,
+                    'Modelo': modelo,
+                    'Anio': int(anio),
+                    'Km': int(km)
+                })
+                session.modified = True
+                mensaje_exito = f"✅ Vehículo {m} {modelo} agregado correctamente."
+            else:
+                mensaje_alerta = "⚠️ Complete correctamente todos los campos del vehículo."
+
+        elif action == 'eliminar_auto':
+            auto_id = int(request.form.get('id', 0))
+            session['autos'] = [a for a in session['autos'] if a['ID'] != auto_id]
+            session.modified = True
+            mensaje_exito = "🗑️ Vehículo eliminado correctamente."
+
+        elif action == 'modificar_auto':
+            auto_id = int(request.form.get('id', 0))
+            m = request.form.get('marca', '').strip().capitalize()
+            modelo = request.form.get('modelo', '').strip()
+            anio = request.form.get('anio', '')
+            km = request.form.get('km', '')
+
+            if m and modelo and anio.isdigit() and km.isdigit():
+                for a in session['autos']:
+                    if a['ID'] == auto_id:
+                        a['Marca'] = m
+                        a['Modelo'] = modelo
+                        a['Anio'] = int(anio)
+                        a['Km'] = int(km)
+                session.modified = True
+                mensaje_exito = f"✏️ Vehículo ID {auto_id} modificado correctamente."
+
     # --- PREPARAR DATAFRAMES Y FILTROS ---
-    df_autos = pd.DataFrame(session['autos'])
     df_ventas = pd.DataFrame(session['ventas'])
+    df_autos = pd.DataFrame(session['autos'])
 
     imagenes_por_marca = {
         'Toyota': 'https://images.unsplash.com/photo-1590362891991-f776e747a588?w=100&auto=format&fit=crop&q=60',
@@ -187,6 +189,7 @@ def home():
         'Chevrolet': 'https://images.unsplash.com/photo-1563720223185-11003d516935?w=100&auto=format&fit=crop&q=60'
     }
 
+    # Lógica de Filtro para Módulo 2
     df_filtrado = df_autos.copy()
     if request.method == 'POST' and request.form.get('action') == 'filtrar_autos':
         marca_ingresada = request.form.get('filtro_marca', '').strip()
@@ -214,7 +217,7 @@ def home():
     else:
         df_filtrado_display = df_filtrado.copy()
 
-    # --- MÓDULO 3: Machine Learning ---
+    # --- MÓDULO 3: Machine Learning (GridSearchCV SVC - Iris) ---
     X, y = load_iris(return_X_y=True)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
     
@@ -227,7 +230,7 @@ def home():
     test_accuracy = grid_search.score(X_test, y_test)
     best_params = grid_search.best_params_
 
-    # Funciones generadoras con comillas corregidas (uso de comillas simples para claves de diccionarios)
+    # Funciones de renderizado de tablas HTML
     def generar_html_tabla_ventas(df):
         html = "<table class='table-ventas'><thead><tr><th>ID</th><th>Sucursal</th><th>Mes</th><th>Producto</th><th>Cantidad</th><th>Precio</th><th>Total</th><th>Acciones</th></tr></thead><tbody>"
         for _, row in df.iterrows():
@@ -275,7 +278,7 @@ def home():
     html_output = f"""
     <html>
         <head>
-            <title>Laboratorio Práctico - Equipo D (CRUD Completo)</title>
+            <title>Laboratorio Práctico - Equipo D (3 Módulos Integrados)</title>
             <style>
                 body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 30px; background-color: #f8f9fa; color: #333; }}
                 h1 {{ color: #2c3e50; text-align: center; margin-bottom: 30px; }}
