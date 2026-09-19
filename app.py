@@ -21,16 +21,16 @@ def home():
         meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio']
         
         productos_info = {
-            'Laptop Gamer': '💻',
-            'Smartphone Alta Gama': '📱',
-            'Tablet 10 pulgadas': '📟',
-            'Teclado Mecanico': '⌨️',
-            'Audifonos Bluetooth': '🎧',
-            'Monitor 24 pulgadas': '🖥️',
-            'Smartwatch Pro': '⌚',
-            'Impresora Multifuncional': '🖨️',
-            'Router': '📡',
-            'Mouse Inalambrico': '🖱️'
+            'Laptop Gamer': 'https://picsum.photos/id/1/60/40',
+            'Smartphone Alta Gama': 'https://picsum.photos/id/160/60/40',
+            'Tablet 10 pulgadas': 'https://picsum.photos/id/2/60/40',
+            'Teclado Mecanico': 'https://picsum.photos/id/3/60/40',
+            'Audifonos Bluetooth': 'https://picsum.photos/id/4/60/40',
+            'Monitor 24 pulgadas': 'https://picsum.photos/id/5/60/40',
+            'Smartwatch Pro': 'https://picsum.photos/id/6/60/40',
+            'Impresora Multifuncional': 'https://picsum.photos/id/9/60/40',
+            'Router': 'https://picsum.photos/id/20/60/40',
+            'Mouse Inalambrico': 'https://picsum.photos/id/30/60/40'
         }
         
         data_ventas = []
@@ -43,7 +43,7 @@ def home():
                 'ID_Venta': 1000 + i,
                 'Sucursal': random.choice(sucursales),
                 'Mes': random.choice(meses),
-                'Icono': f"<span style='font-size: 20px;'>{productos_info[prod]}</span>",
+                'Imagen': f"<img src='{productos_info[prod]}' width='45' style='border-radius:4px; object-fit:cover;'>",
                 'Producto': prod,
                 'Cantidad': cant,
                 'Precio_Unitario': precio,
@@ -52,10 +52,17 @@ def home():
         df_ventas = pd.DataFrame(data_ventas)
 
     # --- MÓDULO 2: Manipulación y Filtrado Avanzado (Logística de Flotas - 50 Registros) ---
-    iconos_vehiculos = ["🚗", "🚙", "🏎️", "🚐", "🚕", "トラック", "🚙", "🚗", "🏎️", "🚐"] * 5
+    # Usamos un conjunto de IDs de imágenes completamente estables de Picsum que cargan al instante sin fallar
+    urls_estables = [
+        "https://picsum.photos/id/111/60/40", "https://picsum.photos/id/133/60/40", 
+        "https://picsum.photos/id/145/60/40", "https://picsum.photos/id/183/60/40", 
+        "https://picsum.photos/id/219/60/40", "https://picsum.photos/id/250/60/40", 
+        "https://picsum.photos/id/28/60/40", "https://picsum.photos/id/36/60/40", 
+        "https://picsum.photos/id/54/60/40", "https://picsum.photos/id/60/60/40"
+    ] * 5
 
     df_autos = pd.DataFrame({
-        'Icono': [f"<span style='font-size: 22px; text-align: center; display: block;'>{icon}</span>" for icon in iconos_vehiculos],
+        'Imagen': [f"<img src='{url}' width='45' style='border-radius:4px; object-fit:cover;'>" for url in urls_estables],
         'Marca': [
             'Toyota', 'Ford', 'Honda', 'Nissan', 'Toyota', 'Honda', 'Toyota', 'Mazda', 'Honda', 'Toyota', 
             'Chevrolet', 'Toyota', 'Honda', 'Nissan', 'Ford', 'Mazda', 'Nissan', 'Chevrolet', 'Ford', 'Honda',
@@ -86,7 +93,7 @@ def home():
         ]
     })
     
-    # Lógica de Filtrado y Validaciones
+    # Lógica de Filtrado y Alerta de Años
     ANIO_MINIMO_DB = 2015
     mensaje_alerta = None
     df_filtrado = df_autos.copy()
@@ -109,7 +116,6 @@ def home():
             km_max = int(km_max_str)
             df_filtrado = df_filtrado[df_filtrado['Km'] <= km_max]
     else:
-        # Filtro por defecto inicial estricto
         filtro_defecto = ((df_autos['Marca'] == 'Toyota') | (df_autos['Marca'] == 'Honda')) & (df_autos['Anio'] > 2018) & (df_autos['Km'] < 50000)
         df_filtrado = df_autos[filtro_defecto]
 
@@ -141,7 +147,6 @@ def home():
                 table {{ border-collapse: collapse; width: 100%; margin-top: 10px; background: #fff; font-size: 14px; }}
                 th, td {{ border: 1px solid #e2e8f0; padding: 10px; text-align: left; vertical-align: middle; }}
                 
-                .table-ventas th {{ background-color: #1e3a8a; color: white; }}
                 .table-autos th {{ background-color: #065f46; color: white; }}
                 .table-filtrados th {{ background-color: #581c87; color: white; }}
 
