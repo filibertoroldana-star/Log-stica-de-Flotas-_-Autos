@@ -1,7 +1,3 @@
-﻿ID_Venta,Sucursal,Mes,Producto,Cantidad,Precio_Unitario,Total
-1,Norte,Enero,Laptop Gamer,15,1200,18000
-2,Norte,Enero,Teclado Mecanico,50,45,2250
-3,Norte,Febrero,Monitor 24 pulgadas,30,200,6000
-4,Norte,Febrero,Mouse Inalambrico,120,25,3000
-5,Norte,Marzo,Silla Ergonomica,25,3000,75000
-6,Norte,Marzo,Audifonos Gamer,45,80,3600
+﻿ID_Venta,Sucursal,Mes,Imagen,Producto,Cantidad,Precio_Unitario,Total
+1001,Norte,Enero,<img src='https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=100' width='40' style='border-radius:6px;'>,Laptop Gamer,15,1200,18000
+1002,Norte,Febrero,<img src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=100' width='40' style='border-radius:6px;'>,Smartphone Alta Gama,20,800,16000
