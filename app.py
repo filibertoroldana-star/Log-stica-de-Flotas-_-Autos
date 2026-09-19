@@ -102,7 +102,7 @@ def home():
                     'Total': c * p
                 })
                 session.modified = True
-                mensaje_exito = f"✅ Venta registrada correctamente en sucursal {suc} (Precio y Total calculados)."
+                mensaje_exito = f"✅ Venta registrada correctamente en sucursal {suc}."
             else:
                 mensaje_alerta = "⚠️ Complete todos los campos de la venta correctamente."
 
@@ -315,6 +315,18 @@ def home():
                 .close:hover {{ color: black; }}
             </style>
             <script>
+                function calcularTotalNuevo() {{
+                    let cant = parseFloat(document.getElementById('nueva_cantidad').value) || 0;
+                    let prec = parseFloat(document.getElementById('nuevo_precio').value) || 0;
+                    document.getElementById('nuevo_total').value = (cant * prec).toFixed(2);
+                }}
+
+                function calcularTotalMod() {{
+                    let cant = parseFloat(document.getElementById('edit_venta_cantidad').value) || 0;
+                    let prec = parseFloat(document.getElementById('edit_venta_precio').value) || 0;
+                    document.getElementById('edit_venta_total').value = (cant * prec).toFixed(2);
+                }}
+
                 function abrirModalAuto(id, marca, modelo, anio, km) {{
                     document.getElementById('edit_auto_id').value = id;
                     document.getElementById('edit_auto_marca').value = marca;
@@ -331,6 +343,7 @@ def home():
                     document.getElementById('edit_venta_mes').value = mes;
                     document.getElementById('edit_venta_cantidad').value = cantidad;
                     document.getElementById('edit_venta_precio').value = precio;
+                    calcularTotalMod();
                     document.getElementById('modalVenta').style.display = 'block';
                 }}
                 function cerrarModalVenta() {{ document.getElementById('modalVenta').style.display = 'none'; }}
@@ -344,8 +357,24 @@ def home():
 
             <!-- MÓDULO 1: Ventas E-Commerce -->
             <h2>MÓDULO 1: PIPELINE DE DATOS Y VENTAS (Centro, Sur y Norte)</h2>
+            
+            <div class="box" style="border-left: 5px solid #2563eb;">
+                <h3>🔍 Buscador de Ventas por Sucursal</h3>
+                <p>Filtra de forma instantánea escribiendo la sucursal que deseas consultar (ej. <strong>Norte</strong>, <strong>Sur</strong> o <strong>Centro</strong>):</p>
+                <form method="POST" class="controls-container" style="background: #f1f5f9;">
+                    <input type="hidden" name="action" value="filtrar_ventas">
+                    <div>
+                        <label><strong>Sucursal a buscar:</strong></label><br>
+                        <input type="text" name="filtro_sucursal" placeholder="Norte, Sur o Centro..." value="{request.form.get('filtro_sucursal', '') if request.method == 'POST' and request.form.get('action') == 'filtrar_ventas' else ''}">
+                    </div>
+                    <div style="align-self: flex-end;">
+                        <button type="submit" class="btn-primary">Buscar Sucursal</button>
+                    </div>
+                </form>
+            </div>
+
             <div class="box">
-                <h4>➕ Registrar Nueva Venta (Cálculo automático de Precio y Total):</h4>
+                <h4>➕ Registrar Nueva Venta (El Total se calcula automáticamente):</h4>
                 <form method="POST" class="controls-container">
                     <input type="hidden" name="action" value="agregar_venta">
                     <div>
@@ -362,26 +391,18 @@ def home():
                     </div>
                     <div>
                         <label><strong>Cantidad:</strong></label><br>
-                        <input type="number" name="cantidad" placeholder="Ej. 25" required>
+                        <input type="number" name="cantidad" id="nueva_cantidad" placeholder="Ej. 25" oninput="calcularTotalNuevo()" required>
                     </div>
                     <div>
                         <label><strong>Precio Unitario ($):</strong></label><br>
-                        <input type="number" name="precio" placeholder="Ej. 450" required>
+                        <input type="number" name="precio" id="nuevo_precio" placeholder="Ej. 450" oninput="calcularTotalNuevo()" required>
+                    </div>
+                    <div>
+                        <label><strong>Total Automático ($):</strong></label><br>
+                        <input type="text" id="nuevo_total" readonly placeholder="Auto-calculado" style="background-color: #e2e8f0; font-weight: bold;">
                     </div>
                     <div style="align-self: flex-end;">
                         <button type="submit" class="btn-success">Guardar Venta</button>
-                    </div>
-                </form>
-
-                <h4>🔍 Buscador de Ventas por Sucursal (Norte, Sur o Centro):</h4>
-                <form method="POST" class="controls-container">
-                    <input type="hidden" name="action" value="filtrar_ventas">
-                    <div>
-                        <label><strong>Escribe Sucursal (Norte, Sur, Centro):</strong></label><br>
-                        <input type="text" name="filtro_sucursal" placeholder="Ej. Centro" value="{request.form.get('filtro_sucursal', '') if request.method == 'POST' and request.form.get('action') == 'filtrar_ventas' else ''}">
-                    </div>
-                    <div style="align-self: flex-end;">
-                        <button type="submit" class="btn-primary">Filtrar Sucursal</button>
                     </div>
                 </form>
                 
@@ -491,8 +512,9 @@ def home():
                            </select>
                         </p>
                         <p><label>Mes:</label><br><input type="text" name="mes" id="edit_venta_mes" required style="width:100%; padding:6px;"></p>
-                        <p><label>Cantidad:</label><br><input type="number" name="cantidad" id="edit_venta_cantidad" required style="width:100%; padding:6px;"></p>
-                        <p><label>Precio Unitario ($):</label><br><input type="number" name="precio" id="edit_venta_precio" required style="width:100%; padding:6px;"></p>
+                        <p><label>Cantidad:</label><br><input type="number" name="cantidad" id="edit_venta_cantidad" oninput="calcularTotalMod()" required style="width:100%; padding:6px;"></p>
+                        <p><label>Precio Unitario ($):</label><br><input type="number" name="precio" id="edit_venta_precio" oninput="calcularTotalMod()" required style="width:100%; padding:6px;"></p>
+                        <p><label>Total Automático ($):</label><br><input type="text" id="edit_venta_total" readonly style="width:100%; padding:6px; background-color:#e2e8f0; font-weight:bold;"></p>
                         <button type="submit" class="btn-primary" style="width:100%; padding:8px;">Guardar Cambios</button>
                     </form>
                 </div>
