@@ -28,7 +28,7 @@ def home():
                 'ID_Venta': 1000 + i,
                 'Sucursal': random.choice(sucursales),
                 'Mes': random.choice(meses),
-                'Imagen': "<img src='https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=100&auto=format&fit=crop&q=60' width='45' style='border-radius:4px;'>",
+                'Imagen': '<img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=100&auto=format&fit=crop&q=60" width="45" style="border-radius:4px;">',
                 'Producto': 'Producto Tech',
                 'Cantidad': cant,
                 'Precio_Unitario': precio,
@@ -37,7 +37,7 @@ def home():
         df_ventas = pd.DataFrame(data_ventas)
 
     # --- MÓDULO 2: Manipulación y Filtrado Avanzado (Logística de Flotas - 50 Registros) ---
-    # URLs garantizadas y probadas que cargan perfectamente por marca
+    # URLs de imágenes probadas que cargan de forma 100% estable por marca
     imagenes_por_marca = {
         'Toyota': 'https://images.unsplash.com/photo-1590362891991-f776e747a588?w=100&auto=format&fit=crop&q=60',
         'Ford': 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=100&auto=format&fit=crop&q=60',
@@ -56,7 +56,7 @@ def home():
     ]
 
     df_autos = pd.DataFrame({
-        'Imagen': [f"<img src='{imagenes_por_marca.get(m, imagenes_por_marca['Toyota'])}' width='50' style='border-radius:4px; object-fit:cover;'>" for m in marcas],
+        'Imagen': [f'<img src="{imagenes_por_marca.get(m, imagenes_por_marca["Toyota"])}" width="50" style="border-radius:4px; object-fit:cover;">' for m in marcas],
         'Marca': marcas,
         'Modelo': [
             'Corolla', 'Focus', 'Civic', 'Sentra', 'RAV4', 'CR-V', 'Camry', 'Mazda3', 'Accord', 'Yaris', 
