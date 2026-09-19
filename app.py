@@ -83,7 +83,7 @@ def home():
 
         # Acciones Módulo 1 (Ventas)
         if action == 'agregar_venta':
-            suc = request.form.get('sucursal', '')
+            suc = request.form.get('sucursal', '').strip().capitalize()
             mes = request.form.get('mes', '').strip()
             cant = request.form.get('cantidad', '')
             precio = request.form.get('precio', '')
@@ -102,9 +102,9 @@ def home():
                     'Total': c * p
                 })
                 session.modified = True
-                mensaje_exito = f"✅ Venta registrada en sucursal {suc}."
+                mensaje_exito = f"✅ Venta registrada correctamente en sucursal {suc} (Precio y Total calculados)."
             else:
-                mensaje_alerta = "⚠️ Complete todos los campos de la venta."
+                mensaje_alerta = "⚠️ Complete todos los campos de la venta correctamente."
 
         elif action == 'eliminar_venta':
             venta_id = int(request.form.get('id', 0))
@@ -114,7 +114,7 @@ def home():
 
         elif action == 'modificar_venta':
             venta_id = int(request.form.get('id', 0))
-            suc = request.form.get('sucursal', '')
+            suc = request.form.get('sucursal', '').strip().capitalize()
             mes = request.form.get('mes', '').strip()
             cant = request.form.get('cantidad', '')
             precio = request.form.get('precio', '')
@@ -189,7 +189,14 @@ def home():
         'Chevrolet': 'https://images.unsplash.com/photo-1563720223185-11003d516935?w=100&auto=format&fit=crop&q=60'
     }
 
-    # Lógica de Filtro para Módulo 2
+    # Lógica de Filtro para Módulo 1 (Ventas por Sucursal)
+    df_ventas_filtrado = df_ventas.copy()
+    if request.method == 'POST' and request.form.get('action') == 'filtrar_ventas':
+        sucursal_buscada = request.form.get('filtro_sucursal', '').strip()
+        if sucursal_buscada:
+            df_ventas_filtrado = df_ventas_filtrado[df_ventas_filtrado['Sucursal'].str.contains(sucursal_buscada, case=False, na=False)]
+
+    # Lógica de Filtro para Módulo 2 (Flota de Autos)
     df_filtrado = df_autos.copy()
     if request.method == 'POST' and request.form.get('action') == 'filtrar_autos':
         marca_ingresada = request.form.get('filtro_marca', '').strip()
@@ -232,7 +239,7 @@ def home():
 
     # Funciones de renderizado de tablas HTML
     def generar_html_tabla_ventas(df):
-        html = "<table class='table-ventas'><thead><tr><th>ID</th><th>Sucursal</th><th>Mes</th><th>Producto</th><th>Cantidad</th><th>Precio</th><th>Total</th><th>Acciones</th></tr></thead><tbody>"
+        html = "<table class='table-ventas'><thead><tr><th>ID</th><th>Sucursal</th><th>Mes</th><th>Producto</th><th>Cantidad</th><th>Precio Unitario</th><th>Total</th><th>Acciones</th></tr></thead><tbody>"
         for _, row in df.iterrows():
             vid = row['ID']
             vsuc = row['Sucursal']
@@ -336,9 +343,9 @@ def home():
             {f'<div class="alert">{mensaje_alerta}</div>' if mensaje_alerta else ''}
 
             <!-- MÓDULO 1: Ventas E-Commerce -->
-            <h2>MÓDULO 1: PIPELINE DE DATOS (Ventas Norte, Sur y Centro)</h2>
+            <h2>MÓDULO 1: PIPELINE DE DATOS Y VENTAS (Centro, Sur y Norte)</h2>
             <div class="box">
-                <h4>➕ Registrar Nueva Venta:</h4>
+                <h4>➕ Registrar Nueva Venta (Cálculo automático de Precio y Total):</h4>
                 <form method="POST" class="controls-container">
                     <input type="hidden" name="action" value="agregar_venta">
                     <div>
@@ -358,17 +365,29 @@ def home():
                         <input type="number" name="cantidad" placeholder="Ej. 25" required>
                     </div>
                     <div>
-                        <label><strong>Precio Unitario:</strong></label><br>
+                        <label><strong>Precio Unitario ($):</strong></label><br>
                         <input type="number" name="precio" placeholder="Ej. 450" required>
                     </div>
                     <div style="align-self: flex-end;">
                         <button type="submit" class="btn-success">Guardar Venta</button>
                     </div>
                 </form>
+
+                <h4>🔍 Buscador de Ventas por Sucursal (Norte, Sur o Centro):</h4>
+                <form method="POST" class="controls-container">
+                    <input type="hidden" name="action" value="filtrar_ventas">
+                    <div>
+                        <label><strong>Escribe Sucursal (Norte, Sur, Centro):</strong></label><br>
+                        <input type="text" name="filtro_sucursal" placeholder="Ej. Centro" value="{request.form.get('filtro_sucursal', '') if request.method == 'POST' and request.form.get('action') == 'filtrar_ventas' else ''}">
+                    </div>
+                    <div style="align-self: flex-end;">
+                        <button type="submit" class="btn-primary">Filtrar Sucursal</button>
+                    </div>
+                </form>
                 
-                <p><strong>Total de registros en Ventas ({len(df_ventas)} totales):</strong></p>
+                <p><strong>Resultados en Ventas ({len(df_ventas_filtrado)} registros coincidentes / {len(df_ventas)} totales):</strong></p>
                 <div class="table-container">
-                    {generar_html_tabla_ventas(df_ventas)}
+                    {generar_html_tabla_ventas(df_ventas_filtrado)}
                 </div>
             </div>
 
@@ -420,7 +439,7 @@ def home():
                 </div>
             </form>
 
-            <h3>Resultado del Filtro:</h3>
+            <h3>Resultado del Filtro de Flota:</h3>
             <div style="overflow-x: auto;">
                 {df_filtrado_display.to_html(classes='table-filtrados', index=False, escape=False) if not df_filtrado.empty else '<p>No se encontraron vehículos con los filtros seleccionados.</p>'}
             </div>
@@ -473,7 +492,7 @@ def home():
                         </p>
                         <p><label>Mes:</label><br><input type="text" name="mes" id="edit_venta_mes" required style="width:100%; padding:6px;"></p>
                         <p><label>Cantidad:</label><br><input type="number" name="cantidad" id="edit_venta_cantidad" required style="width:100%; padding:6px;"></p>
-                        <p><label>Precio Unitario:</label><br><input type="number" name="precio" id="edit_venta_precio" required style="width:100%; padding:6px;"></p>
+                        <p><label>Precio Unitario ($):</label><br><input type="number" name="precio" id="edit_venta_precio" required style="width:100%; padding:6px;"></p>
                         <button type="submit" class="btn-primary" style="width:100%; padding:8px;">Guardar Cambios</button>
                     </form>
                 </div>
