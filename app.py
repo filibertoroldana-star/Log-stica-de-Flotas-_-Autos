@@ -221,7 +221,7 @@ def home():
 
             <h3>Todos los Vehículos ({len(df_autos)} Registros con Imágenes - Estilo Esmeralda):</h3>
             <div class="table-container">
-                {df_autos.to_html(classes='table-autos', id="tabla-autos", index=True, escape=False)}
+                {df_autos.to_html(classes='table-autos', table_id="tabla-autos", index=True, escape=False)}
             </div>
 
             <h3>Resultado del Filtro Estricto (Toyota/Honda, >2018, &lt;50k Km - Estilo Púrpura):</h3>
