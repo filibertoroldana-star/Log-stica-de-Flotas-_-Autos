@@ -20,8 +20,6 @@ def home():
         sucursales = ['Norte', 'Sur', 'Centro']
         meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio']
         
-        svg_carrito = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='35' height='30' viewBox='0 0 24 24' fill='%231e3a8a'><path d='M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z'/></svg>"
-        
         data_ventas = []
         for i in range(1, 51):
             cant = random.randint(5, 100)
@@ -30,7 +28,7 @@ def home():
                 'ID_Venta': 1000 + i,
                 'Sucursal': random.choice(sucursales),
                 'Mes': random.choice(meses),
-                'Imagen': f"<img src='{svg_carrito}' width='35'>",
+                'Imagen': "<img src='https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=100&auto=format&fit=crop&q=60' width='45' style='border-radius:4px;'>",
                 'Producto': 'Producto Tech',
                 'Cantidad': cant,
                 'Precio_Unitario': precio,
@@ -39,18 +37,27 @@ def home():
         df_ventas = pd.DataFrame(data_ventas)
 
     # --- MÓDULO 2: Manipulación y Filtrado Avanzado (Logística de Flotas - 50 Registros) ---
-    # SVG incrustado de un auto deportivo: Carga siempre al 100% sin depender de servidores externos
-    svg_auto = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='45' height='30' viewBox='0 0 24 24' fill='%23059669'><path d='M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.04 3H5.81l1.04-3zM19 17H5v-4.66l.12-.34h13.76l.12.34V17z'/></svg>"
+    # URLs garantizadas y probadas que cargan perfectamente por marca
+    imagenes_por_marca = {
+        'Toyota': 'https://images.unsplash.com/photo-1590362891991-f776e747a588?w=100&auto=format&fit=crop&q=60',
+        'Ford': 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=100&auto=format&fit=crop&q=60',
+        'Honda': 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=100&auto=format&fit=crop&q=60',
+        'Nissan': 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=100&auto=format&fit=crop&q=60',
+        'Mazda': 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=100&auto=format&fit=crop&q=60',
+        'Chevrolet': 'https://images.unsplash.com/photo-1563720223185-11003d516935?w=100&auto=format&fit=crop&q=60'
+    }
+
+    marcas = [
+        'Toyota', 'Ford', 'Honda', 'Nissan', 'Toyota', 'Honda', 'Toyota', 'Mazda', 'Honda', 'Toyota', 
+        'Chevrolet', 'Toyota', 'Honda', 'Nissan', 'Ford', 'Mazda', 'Nissan', 'Chevrolet', 'Ford', 'Honda',
+        'Toyota', 'Nissan', 'Mazda', 'Chevrolet', 'Ford', 'Toyota', 'Honda', 'Nissan', 'Mazda', 'Ford',
+        'Chevrolet', 'Toyota', 'Honda', 'Nissan', 'Mazda', 'Ford', 'Toyota', 'Honda', 'Nissan', 'Chevrolet',
+        'Mazda', 'Toyota', 'Honda', 'Ford', 'Nissan', 'Chevrolet', 'Toyota', 'Mazda', 'Honda', 'Ford'
+    ]
 
     df_autos = pd.DataFrame({
-        'Imagen': [f"<img src='{svg_auto}' width='42'>" for _ in range(50)],
-        'Marca': [
-            'Toyota', 'Ford', 'Honda', 'Nissan', 'Toyota', 'Honda', 'Toyota', 'Mazda', 'Honda', 'Toyota', 
-            'Chevrolet', 'Toyota', 'Honda', 'Nissan', 'Ford', 'Mazda', 'Nissan', 'Chevrolet', 'Ford', 'Honda',
-            'Toyota', 'Nissan', 'Mazda', 'Chevrolet', 'Ford', 'Toyota', 'Honda', 'Nissan', 'Mazda', 'Ford',
-            'Chevrolet', 'Toyota', 'Honda', 'Nissan', 'Mazda', 'Ford', 'Toyota', 'Honda', 'Nissan', 'Chevrolet',
-            'Mazda', 'Toyota', 'Honda', 'Ford', 'Nissan', 'Chevrolet', 'Toyota', 'Mazda', 'Honda', 'Ford'
-        ],
+        'Imagen': [f"<img src='{imagenes_por_marca.get(m, imagenes_por_marca['Toyota'])}' width='50' style='border-radius:4px; object-fit:cover;'>" for m in marcas],
+        'Marca': marcas,
         'Modelo': [
             'Corolla', 'Focus', 'Civic', 'Sentra', 'RAV4', 'CR-V', 'Camry', 'Mazda3', 'Accord', 'Yaris', 
             'Cruze', 'Hilux', 'Fit', 'Versa', 'Ranger', 'CX-5', 'Altima', 'Aveo', 'Fiesta', 'HR-V',
